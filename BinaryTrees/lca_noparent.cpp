@@ -6,10 +6,9 @@ using namespace std;
 
 
 /*
- *  Find the lowest common ancestor of two nodes of a binary tree,
- *  identified by their keys, where the nodes do not have a parent pointer.
- */
-
+Find the lowest common ancestor of two nodes of a binary tree,
+identified by their keys, where the nodes do not have a parent pointer.
+*/
 
 struct node {
    int key;
@@ -20,8 +19,8 @@ struct node {
 
 
 /*
-  recursive dfs with path tracing
- */
+recursive dfs with path tracing
+*/
 bool dfs_rec(node *root, int key, list<node*> &path) {
 
    /* base cases: root is NULL of root's key is searched key  */
@@ -40,8 +39,8 @@ bool dfs_rec(node *root, int key, list<node*> &path) {
 }
 
 /*
-  iterative dfs with path tracing
- */
+iterative dfs with path tracing
+*/
 bool dfs_it(node *root, int key, list<node*> &path) {
 
    typedef enum {
@@ -90,8 +89,8 @@ bool dfs_it(node *root, int key, list<node*> &path) {
 }
 
 /*
-  find the lowest common ancestor of two keys
- */
+find the lowest common ancestor of two keys
+*/
 node *lca(node *tree, int k1, int k2) {
    list<node*> p1,p2;
    dfs_it(tree,k1,p1);
@@ -109,8 +108,8 @@ node *lca(node *tree, int k1, int k2) {
 }
 
 /*
-  function to print the content of a path list
- */
+function to print the content of a path list
+*/
 void print_list(list<node*> &l) {
    for (auto n:l) {
       cout << n->key << "  ";
@@ -120,8 +119,8 @@ void print_list(list<node*> &l) {
 
 
 /*
-  unit-test function for building a test tree
- */
+unit-test function for building a test tree
+*/
 node *build_test_tree() {
    node *n1 = new node(1);
    node *n2 = new node(2);

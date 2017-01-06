@@ -2,6 +2,9 @@
 #include <vector>
 using namespace std;
 
+/* 
+given a binary tree, check if it's a BST
+*/
 class BinaryTree {
 public:
   int data;
@@ -57,6 +60,7 @@ bool is_bst(BinaryTree *tree) {
 }
 
 BinaryTree *create_tree(vector<int> &v) {
+  if (v.size()==0) return NULL;
   vector<BinaryTree*> p(v.size());
   for (int i=0; i<v.size(); i++) {
     p[i] = new BinaryTree(v[i]);
@@ -78,8 +82,16 @@ BinaryTree *create_tree(vector<int> &v) {
 }
 
 int main() {
-  vector<int> v = {1,2,3,4,5,6,7,8};
-  BinaryTree *tree = create_tree(v);
+  vector<int> v;
+  BinaryTree *tree;
+
+  v = {1,2,3,4,5,6,7};
+  tree = create_tree(v);
   cout << is_bst(tree) << endl;
+
+  v = {4,2,6,1,3,5,7};
+  tree = create_tree(v);
+  cout << is_bst(tree) << endl;
+
   return 0;
 }
