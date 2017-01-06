@@ -65,18 +65,16 @@ BinaryTree *create_tree(vector<int> &v) {
   for (int i=0; i<v.size(); i++) {
     p[i] = new BinaryTree(v[i]);
   }  
-  int i=0;
-  bool left = true;
-  for (int j=1; j<p.size(); j++) {
-    if (left) {
+  for (int i=0, j=1; j<p.size(); j++) {
+    if (j%2 != 0) {
+      /* insert p[j] as left child of p[i] */
       p[i]->left = p[j];
       p[j]->parent = p[i];
     } else {
+      /* insert p[j] as right child of p[i] and increment i */
       p[i]->right = p[j];
-      p[j]->parent = p[i];
-      i++;
+      p[j]->parent = p[i++];
     }
-    left = !left;
   }
   return p[0];
 }
