@@ -6,9 +6,11 @@ class Solution {
 public:
   bool canPartition(vector<int>& nums) {
     int n=nums.size();
-    if (n%2) return false;
-    vector<vector<int>> mem(n+1,vector<int>(n/2+1,-1));
-    return canPartition_target(mem,nums,n,n/2);
+    int sum=0;
+    for (auto i:nums) sum+=i;
+    if (sum%2) return false;
+    vector<vector<int>> mem(n+1,vector<int>(sum/2+1,-1));
+    return canPartition_target(mem,nums,n,sum/2);
   }
 
   bool canPartition_target(vector<vector<int>> &mem, 
