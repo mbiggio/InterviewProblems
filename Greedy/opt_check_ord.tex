@@ -1,0 +1,90 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{clrscode3e}	
+\usepackage[shortlabels]{enumitem}
+\setcounter{section}{0}
+
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newtheorem{mythm}{Theorem}
+
+
+\begin{document}
+
+\title{Optimal Check Ordering Problem} 
+\author{Matteo Biggio} 
+\maketitle 
+
+\section{Problem Statement}
+
+We are given a set $S$ of $n$ checks, with indices ranging from \ to $n$, each one with an associated cost $c_{i} > 0$ and a KO probability $0 \leq P_{i} \leq 1$. 
+
+Checks are meant to be applied to objects taken from a given ensemble $\mathcal{O}$.
+Every check, when applied to a particular object $o \in \mathcal{O}$, can result in a KO, in which case we say $o$ is \emph{invalidated} by $i$, or in a OK, in which case another check is applied, until $o$ is finally invalidated by some check or all the check of $S$ are OK for $o$ (in which case we say that $o$ \emph{passes} the checks in $S$).
+
+The KO probability $P_{i}$ for check $i$ is calculated as the fraction of objects of $\mathcal{O}$ for which check $i$ results in a KO:  
+
+\begin{equation}
+	P_{i} = \frac{ | \{ o \in \mathcal{O}: o \text{ is invalidated by } i\} | }{|\mathcal{O}|}
+\end{equation}
+
+We wish to find, given the check costs $\{ c_{i}, i=1,\ldots,n \}$ and the check KO probabilities $\{ P_{i}, i=1,\ldots,n \}$, a permutation $p$ of the indices $1,\ldots,n$ such that the average summed check cost is minimized 
+
+\begin{equation}
+\begin{split}
+	C_{i_{1},i_{2},\ldots,i_{n}} = P_{i_{1}}c_{i_{1}} + (1-P_{i_{1}})P_{i_{2}}\left[c_{i_{1}} + c_{i_{2}} \right] + \ldots \\
+	\ldots + (1-P_{i_{1}}) \cdots (1-P_{i_{n-1}})P_{i_{n}} \left[ c_{i_{1}} + \ldots + c_{i_{n}} \right] + \\
+	+ (1-P_{i_{1}}) \cdots (1-P_{i_{n}}) \left[ c_{i_{1}} + \ldots + c_{i_{n}} \right]
+\end{split}
+\end{equation}
+or a little more formally 
+\begin{equation}\label{cost}
+\begin{split}
+	C_{i_{1},i_{2},\ldots,i_{n}} = \sum_{k=1}^{n} \left\{ \left[\prod_{h=1}^{k-1}(1-P_{i_{h}})P_{i_{k}}\right] \left[ \sum_{p=1}^{k}c_{i_{p}} \right] \right\} + \left(\prod_{h=1}^{n}(1-P_{i_{h}})\right)\left( \sum_{p=1}^{n}c_{i_{p}} \right)
+\end{split}
+\end{equation}
+
+Each terms of the summation from $k=1$ to $n$ of equation \eqref{cost} represents the total cost of a sequence of checks, given that the first check that returns KO is the $k$-th one in the permutation, weighted by the corresponding probability $(1-P_{i_{1}}) \cdots (1-P_{i_{k-1}})P_{i_{k}}$. The last term is the total cost of a sequence of checks that all result in OK, weighted by the corresponding probability $(1-P_{i_{1}}) \cdots (1-P_{i_{n}})$.
+
+With some algebra, the cost function \eqref{cost} can be simplified to the following (much more convenient) form
+\begin{equation}\label{cost_simple}
+\begin{split}
+	C_{i_{1},i_{2},\ldots,i_{n}} = \sum_{k=1}^{n} \left\{\prod_{h=1}^{k-1}(1-P_{i_{h}}) \right\}c_{i_{k}}
+\end{split}
+\end{equation}
+
+
+\section{A Greedy Solution}
+
+Despite the problem looking complicated, we will show in ths section that a permutation of the checks that minimizes the total average cost \eqref{cost_simple} can be obtained very simply in $O(n \log n)$ worst-case time by ordering the checks in non-increasing order of the ratio $P_{i}/c_{i}$. This intuitively sounds like a good greedy strategy: checks that have high KO probability and little cost should come first in the optimal sequence so that they invalidate a big fraction of objects as soon as possible with little cost. It's however non-trivial that the exact tradeoff between the cost and the KO probability has to be expressed as a ratio, and this is what we are going to prove.
+
+\begin{mythm}
+The sequence obtained by ordering the checks in non-increasing order of the ratio $P_{i}/c_{i}$  is an optimal sequence for the optimal check ordering problem.
+\end{mythm}
+\begin{proof}
+We will prove the theorem by showing that ordering the elements by pairwise swaps between adjacent elements starting from an optimal solution never increases the cost function. Suppose there is an optimal sequence that is not ordered in non-increasing order of $P_{i}/c_{i}$, and suppose (for simplicity) that this sequence corresponds to the identity permutation of the checks. Let the optimal cost attained with this sequence be $C_{opt}$. Then it means that there are at least two consecutive checks $i$ and $i+1$, with $1 \leq i \leq n-1$, such that $P_{i}/c_{i} < P_{i+1}/c_{i+1}$. Suppose we construct another permutation of the checks by swapping these two, and indicate its resulting cost as $C_{i \leftrightarrow i+1}$.
+
+We want to calculate the difference $C_{i \leftrightarrow i+1} - C_{opt}$ using equation \eqref{cost_simple} for the cost function. It is easy to see that the only two terms that are affected by the swap are the ones with $k=i$ and $k=i+1$:
+
+\begin{equation}
+\begin{split}
+	C_{i \leftrightarrow i+1} - C_{opt} = \left\{\prod_{h=1}^{i-1}(1-P_{k})\right\}c_{i+1} + \left\{\prod_{h=1}^{i-1}(1-P_{k})\right\}(1-P_{i+1})c_{i} \\
+	-\left\{\prod_{h=1}^{i-1}(1-P_{k})\right\}c_{i} - \left\{\prod_{h=1}^{i-1}(1-P_{k})\right\}(1-P_{i})c_{i+1}
+\end{split}
+\end{equation}
+Collecting common terms and simplifying
+
+\begin{equation}
+\begin{split}
+	C_{i \leftrightarrow i+1} - C_{opt} = \left\{\prod_{h=1}^{i-1}(1-P_{k})\right\}\left( c_{i+1}P_{i} - c_{i}P_{i+1} \right) 
+\end{split}
+\end{equation}
+The first term is a product of probabilities and is therefore always greater than or equal to zero. On the other hand, the second term is less than zero, because of the way we choose indices $i$ and $i+1$. Therefore the cost function can never increase by swapping two elements that are in increasing order of the ratio $P_{i}/c_{i}$. Since every sequence of numbers can be ordered by a finite number of pairwise swaps betweeen adjacent elements (insertion-sort algorithm), we have proven our theorem.
+
+\end{proof}
+
+\end{document}
